@@ -19,4 +19,5 @@ public class Software
     public Client Client { get; set; }
     
     public ICollection<Discount> Discounts { get; set; }
+    public ICollection<SubscriptionOffer> SubscriptionOffers { get; set; }
 }

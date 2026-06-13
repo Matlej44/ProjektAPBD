@@ -16,7 +16,6 @@ public class Contract
 
     //Na podstawie tej relacji można wyliczyć liste bo musimy tylko pamietać o podstawowej wersji
     public SoftwareVersion SoftwareVersion { get; set; }
-    public int LicenceId { get; set; }
     public ICollection<Payment> Payments { get; set; }
     public Client Client { get; set; }
     

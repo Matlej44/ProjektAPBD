@@ -115,6 +115,45 @@ public class ContractService : IContractService
         };
     }
 
+    public async Task UpdateAllContractsAsync()
+    {
+        var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var contracts = await _context.Contracts.Where(x => x.IsActive && x.EndDate < DateTime.Now).ToListAsync();
+            foreach (var contract in contracts)
+            {
+                contract.IsActive = false;
+            }
+            var contractsToActivate = await _context.Contracts.Where( x => !x.IsActive && x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now).ToListAsync();
+            foreach (var contract in contractsToActivate)
+            {
+                if (await CountTheMoneyDiff(contract.ContractId) == 0)
+                {
+                    contract.IsActive = true;
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+        await transaction.CommitAsync();
+    }
+
+    public async Task DeleteContractAsync(int id)
+    {
+        var findAsync = await _context.Contracts.FindAsync(id);
+        if (findAsync == null)
+            throw new NotFoundException("Nie znaleziono kontraktu o takim id");
+        if (findAsync.IsActive)
+            throw new BadRequestException("Nie wolno usunąć aktywnego kontraktu");
+        _context.Contracts.Remove(findAsync);
+        await _context.SaveChangesAsync();
+    }
+
 
     private async Task<decimal> CalculatePriceAsync(int softwareVersionId, int additionalSupportYears)
     {
@@ -163,8 +202,12 @@ public class ContractService : IContractService
     //Will return money that is to be paid
     //If over client overpaid, if under client underpaid,
     //if equal 0 contract is fully paid
-    public decimal IsFullyPaid(int contractId)
+    public async Task<decimal> CountTheMoneyDiff(int contractId)
     {
-        throw new NotImplementedException();
+        var sumAsync = await _context.Payments.Where(x => x.ContractId == contractId).SumAsync(x => x.Amount);
+        var contractAsync = await _context.Contracts.FindAsync(contractId);
+        if (contractAsync == null)
+            throw new NotFoundException("Nie znaleziono kontraktu");
+        return contractAsync.TotalPrice - sumAsync;
     }
 }

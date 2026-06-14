@@ -63,6 +63,33 @@ namespace Projekt.Controllers
                 return NotFound(e.Message);
             }
         }
+        
+        //Function actvates every day an updates if active or deactivates if not active
+        [HttpPut]
+        public async Task<IActionResult> UpdateAllActiveContracts()
+        {
+            await _contractService.UpdateAllContractsAsync();
+            return Ok();
+        }
+        //Function deletes contract if not active
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> DeleteAllInactiveContracts([FromHeader] int id)
+        {
+            try
+            {
+                await _contractService.DeleteContractAsync(id);
+                return NoContent();
+            }
+            catch (BadRequestException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
     
 }

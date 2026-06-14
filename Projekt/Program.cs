@@ -1,5 +1,6 @@
 using Projekt.Data;
 using Microsoft.EntityFrameworkCore;
+using Projekt.Services;
 
 namespace Projekt;
 
@@ -18,6 +19,7 @@ public class Program
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("docker"));
         });
+        builder.Services.AddScoped<IClientService, ClientService>();
 
         var app = builder.Build();
 

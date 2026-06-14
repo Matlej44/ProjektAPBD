@@ -17,18 +17,18 @@ public class AppDbContext : DbContext
     }
 
     //DbSetsOfAllEntities
-    DbSet<ClientPerson> ClientPersons { get; set; }
-    DbSet<ClientCompany> ClientCompanies { get; set; }
-    DbSet<Client> Clients { get; set; }
-    DbSet<Contract> Contracts { get; set; }
-    DbSet<Payment> Payments { get; set; }
-    DbSet<Subscription> Subscriptions { get; set; }
-    DbSet<Software> Softwares { get; set; }
-    DbSet<SoftwareType> SoftwareTypes { get; set; }
-    DbSet<SoftwareVersion> SoftwareVersions { get; set; }
-    DbSet<SubscriptionOffer> SubscriptionOffers { get; set; }
-    DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
-    DbSet<Discount> Discounts { get; set; }
+    public DbSet<ClientPerson> ClientPersons { get; set; }
+    public DbSet<ClientCompany> ClientCompanies { get; set; }
+    public DbSet<Client> Clients { get; set; }
+    public DbSet<Contract> Contracts { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<Software> Softwares { get; set; }
+    public DbSet<SoftwareType> SoftwareTypes { get; set; }
+    public DbSet<SoftwareVersion> SoftwareVersions { get; set; }
+    public DbSet<SubscriptionOffer> SubscriptionOffers { get; set; }
+    public DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
+    public DbSet<Discount> Discounts { get; set; }
 
     //Either apply configuration or use fluent API(modelBuilder.Entity<T>())
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -67,7 +67,7 @@ public class AppDbContext : DbContext
         //This is extra protection against deleting ClientCompany
         var entries = ChangeTracker.Entries<IBlockDelete>()
             .Where(e=> e.State == EntityState.Deleted);
-        if (entries.Any()) throw new Exception("Cannot delete this entity");
+        if (entries.Any()) throw new InvalidOperationException("Cannot delete this entity");
         
         
         var softDelete = ChangeTracker.Entries<ISoftDelete>()
@@ -76,6 +76,7 @@ public class AppDbContext : DbContext
         {
             //We use a method on every entity that implements ISoftDelete
             entry.Entity.SoftDelete();
+            entry.State = EntityState.Modified;
         }
         
     }
@@ -100,6 +101,6 @@ public class AppDbContext : DbContext
         
         var contracts = ChangeTracker.Entries<Contract>()
             .Where(e => e.State == EntityState.Modified);
-        if (contracts.Any()) throw new Exception("Cannot update Contract");
+        if (contracts.Any()) throw new InvalidOperationException("Cannot update Contract");
     }
 }

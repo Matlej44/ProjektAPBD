@@ -9,4 +9,5 @@ public interface IContractService
     public Task<GetContractsDTO> CreateContract(AddContractDTO contractDto);
     public Task UpdateAllContractsAsync();
     public Task DeleteContractAsync(int id);
+    public Task<string> CreatePaymentAsync(int id, AddPaymentDTO paymentDto);
 }

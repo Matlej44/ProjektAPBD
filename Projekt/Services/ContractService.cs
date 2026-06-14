@@ -44,7 +44,7 @@ public class ContractService : IContractService
 
         if (await HasActiveContract(contractDto.ClientId, contractDto.SoftwareId))
             throw new ConflictException("Już posiadasz aktywny kontrakt dla tego oprogramowania");
-        //Jeżeli klient chce aktualną wersje oprogramowania to musimy ją znaleźć
+        //Jeżeli klient chce aktualną wersję oprogramowania to musimy ją znaleźć
         if (contractDto.SoftwareVersion == "latest")
         {
             var software = await _context.Softwares.FindAsync(contractDto.SoftwareId);
@@ -135,7 +135,7 @@ public class ContractService : IContractService
             }
             await _context.SaveChangesAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             await transaction.RollbackAsync();
             throw;
@@ -152,6 +152,58 @@ public class ContractService : IContractService
             throw new BadRequestException("Nie wolno usunąć aktywnego kontraktu");
         _context.Contracts.Remove(findAsync);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<string> CreatePaymentAsync(int id, AddPaymentDTO paymentDto)
+    {
+        var contract = await _context.Contracts.FindAsync(id);
+        if (contract == null)
+            throw new NotFoundException("Nie znaleziono kontraktu o takim id");
+        if(contract.IsActive) 
+            throw new BadRequestException("Nie można opłacić aktywnego kontraktu");
+        var moneyNeded = await CountTheMoneyDiff(contract.ContractId);
+        if (moneyNeded == 0)
+            throw new BadRequestException("Kontrakt już opłacony");
+
+        Payment payment;
+        switch (moneyNeded - paymentDto.Amount)
+        {
+            case > 0:
+                payment = new Payment
+                {
+                    Amount = paymentDto.Amount,
+                    ClientId = id,
+                    ContractId = contract.ContractId,
+                    Date = DateTime.Now,
+                };
+                await _context.Payments.AddAsync(payment);
+                await _context.SaveChangesAsync();
+                return $"Zapłacono rate za kontrakt pozostało {moneyNeded-paymentDto.Amount} zł.";
+            case 0:
+                payment = new Payment
+                {
+                    Amount = paymentDto.Amount,
+                    ClientId = id,
+                    ContractId = contract.ContractId,
+                    Date = DateTime.Now,
+                };
+                await _context.Payments.AddAsync(payment);
+                await _context.SaveChangesAsync();
+                return "Zapłacono pełną kwote za kontrakt.";
+            case < 0:
+                var returnal = paymentDto.Amount - moneyNeded;
+                payment = new Payment
+                {
+                    //Wpłacamy tylko wymaganą wartość
+                    Amount = moneyNeded,
+                    ContractId = contract.ContractId,
+                    ClientId = paymentDto.ClientId,
+                    Date = DateTime.Now
+                };
+                await _context.Payments.AddAsync(payment);
+                await _context.SaveChangesAsync();
+                return $"Zapłacono z nadwyżką zwrócono {returnal} zł. Kontrakt już opłacony";
+        }
     }
 
 
@@ -202,7 +254,7 @@ public class ContractService : IContractService
     //Will return money that is to be paid
     //If over client overpaid, if under client underpaid,
     //if equal 0 contract is fully paid
-    public async Task<decimal> CountTheMoneyDiff(int contractId)
+    private async Task<decimal> CountTheMoneyDiff(int contractId)
     {
         var sumAsync = await _context.Payments.Where(x => x.ContractId == contractId).SumAsync(x => x.Amount);
         var contractAsync = await _context.Contracts.FindAsync(contractId);

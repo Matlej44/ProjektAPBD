@@ -45,7 +45,7 @@ namespace Projekt.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500 ,e.Message);
+                return StatusCode(500);
             }
         }
 
@@ -89,6 +89,30 @@ namespace Projekt.Controllers
             {
                 return NotFound(e.Message);
             }
+        }
+
+        [HttpPost]
+        [Route("{id:int}/payments")]
+        public async Task<IActionResult> CreatePayment([FromHeader] int id, [FromBody] AddPaymentDTO addPaymentDtoDto)
+        {
+            try
+            {
+                var payment = await _contractService.CreatePaymentAsync(id, addPaymentDtoDto);
+                return Ok(payment);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (BadRequestException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
+            
         }
     }
     

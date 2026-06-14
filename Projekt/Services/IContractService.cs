@@ -1,6 +1,10 @@
-﻿namespace Projekt.Services;
+﻿using Projekt.DTOs.ContractDTOs;
 
-public class IContractService
+namespace Projekt.Services;
+
+public interface IContractService
 {
-    
+    public Task<List<GetContractsDTO>> GetAllContractsAsync();
+    public Task<GetContractsDTO> GetContractByIdAsync(int id);
+    public Task<GetContractsDTO> CreateContract(AddContractDTO contractDto);
 }

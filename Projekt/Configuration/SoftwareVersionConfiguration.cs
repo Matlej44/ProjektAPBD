@@ -13,6 +13,8 @@ public class SoftwareVersionConfiguration : IEntityTypeConfiguration<SoftwareVer
         builder.Property(x => x.Version).HasMaxLength(30);
         builder.HasOne(x => x.Softwares).WithMany(x => x.SoftwareVersions)
             .HasForeignKey(x => x.SoftwareId);
+        builder.HasIndex(x => new { x.SoftwareId, x.Version }).IsUnique();
+        
         builder.HasData(
             // FinManager Pro versions
             new SoftwareVersion { SoftwareVersionId = 1, SoftwareId = 1, Version = "1.0.0", ReleaseDate = new DateTime(2022, 1, 1), YearlyPrice = 5000m },

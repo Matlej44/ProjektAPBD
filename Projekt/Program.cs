@@ -20,6 +20,7 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("docker"));
         });
         builder.Services.AddScoped<IClientService, ClientService>();
+        builder.Services.AddScoped<IContractService, ContractService>();
 
         var app = builder.Build();
 

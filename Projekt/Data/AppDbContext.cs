@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.EntityFrameworkCore;
+using Projekt.Configuration;
 using Projekt.Entity;
 
 namespace Projekt.Data;
@@ -20,11 +21,31 @@ public class AppDbContext : DbContext
     DbSet<ClientCompany> ClientCompanies { get; set; }
     DbSet<Client> Clients { get; set; }
     DbSet<Contract> Contracts { get; set; }
+    DbSet<Payment> Payments { get; set; }
+    DbSet<Subscription> Subscriptions { get; set; }
+    DbSet<Software> Softwares { get; set; }
+    DbSet<SoftwareType> SoftwareTypes { get; set; }
+    DbSet<SoftwareVersion> SoftwareVersions { get; set; }
+    DbSet<SubscriptionOffer> SubscriptionOffers { get; set; }
+    DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
+    DbSet<Discount> Discounts { get; set; }
 
     //Either apply configuration or use fluent API(modelBuilder.Entity<T>())
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
+        modelBuilder.ApplyConfiguration(new ClientConfiguration());
+        modelBuilder.ApplyConfiguration(new ClientCompanyConfiguration());
+        modelBuilder.ApplyConfiguration(new ClientPersonConfiguration());
+        modelBuilder.ApplyConfiguration(new ContractConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
+        modelBuilder.ApplyConfiguration(new SoftwareConfiguration());
+        modelBuilder.ApplyConfiguration(new SoftwareTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new SoftwareVersionConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionOfferConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionPaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new DiscountConfiguration());
+        base.OnModelCreating(modelBuilder);
     }
 
     public override int SaveChanges()

@@ -10,5 +10,8 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
     {
         builder.ToTable("Clients");
         builder.HasKey(x => x.ClientId);
+        builder.UseTptMappingStrategy();
+        builder.Property(x => x.Email).HasMaxLength(100);
+        builder.Property(x => x.PhoneNumber).HasMaxLength(20);
     }
 }

@@ -7,5 +7,5 @@ public class ClientCompany : Client, IBlockDelete
     public string CompanyName { get; set; }
     public string Address { get; set; }
     
-    public int KRS { get; set; }
+    public string KRS { get; set; }
 }

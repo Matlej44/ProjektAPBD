@@ -10,8 +10,9 @@ public class Contract
     public int ClientId { get; set; }
     //Maximum is 3 years each year worth additional 1000 PLN
     public int AdditionalSupportYears { get; set; }
-    
     public int SoftwareVersionId { get; set; }
+    public decimal TotalPrice { get; set; }
+    public bool IsActive { get; set; }
     
 
     //Na podstawie tej relacji można wyliczyć liste bo musimy tylko pamietać o podstawowej wersji

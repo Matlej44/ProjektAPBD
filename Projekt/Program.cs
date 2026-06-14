@@ -16,7 +16,7 @@ public class Program
         builder.Services.AddOpenApi();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlServer(builder.Configuration.GetConnectionString("localDB"));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("docker"));
         });
 
         var app = builder.Build();

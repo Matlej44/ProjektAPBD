@@ -17,9 +17,9 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
         
         builder.HasData(
             // Anna Nowak - subskrypcja miesięczna EduLearn
-            new Subscription { SubscriptionId = 1, ClientId = 2, SubscriptionOfferId = 3, StartDate = new DateTime(2024, 1, 1), EndDate = new DateTime(2024, 2, 1) },
+            new Subscription { SubscriptionId = 1, ClientId = 2, SubscriptionOfferId = 3, StartDate = new DateTime(2024, 1, 1), EndDate = new DateTime(2024, 2, 1), IsActive = false},
             // EduSoft S.A. - subskrypcja roczna FinManager
-            new Subscription { SubscriptionId = 2, ClientId = 4, SubscriptionOfferId = 2, StartDate = new DateTime(2024, 1, 1), EndDate = new DateTime(2025, 1, 1) }
+            new Subscription { SubscriptionId = 2, ClientId = 4, SubscriptionOfferId = 2, StartDate = new DateTime(2024, 1, 1), EndDate = new DateTime(2025, 1, 1), IsActive = true}
         );
         
     }

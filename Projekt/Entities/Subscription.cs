@@ -7,6 +7,8 @@ public class Subscription
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public int SubscriptionOfferId { get; set; }
+    //This means it was paid of
+    public bool IsActive { get; set; }
     
     public Client Client { get; set; }
     public SubscriptionOffer SubscriptionOffer { get; set; }

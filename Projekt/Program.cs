@@ -21,6 +21,7 @@ public class Program
         });
         builder.Services.AddScoped<IClientService, ClientService>();
         builder.Services.AddScoped<IContractService, ContractService>();
+        builder.Services.AddScoped<ISubscrptionService, SubscriptionService>();
 
         var app = builder.Build();
 

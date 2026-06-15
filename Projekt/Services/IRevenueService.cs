@@ -1,6 +1,6 @@
 ﻿namespace Projekt.Services;
 
-public class IRevenueService
+public interface IRevenueService
 {
-    
+    public Task<string> GetCurrentRevenueAsync(string? currency);
 }

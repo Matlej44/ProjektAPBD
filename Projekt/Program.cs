@@ -22,6 +22,9 @@ public class Program
         builder.Services.AddScoped<IClientService, ClientService>();
         builder.Services.AddScoped<IContractService, ContractService>();
         builder.Services.AddScoped<ISubscrptionService, SubscriptionService>();
+        builder.Services.AddScoped<IRevenueService, RevenueService>();
+        builder.Services.AddMemoryCache();
+        builder.Services.AddHttpClient<RevenueService>();
 
         var app = builder.Build();
 

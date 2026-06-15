@@ -1,0 +1,40 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Projekt.Exceptions;
+using Projekt.Services;
+
+namespace Projekt.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RevenueController : ControllerBase
+    {
+        private readonly IRevenueService _revenueService;
+        public RevenueController(IRevenueService revenueService)
+        {
+            _revenueService = revenueService;
+        }
+        [HttpGet]
+        public async Task<IActionResult> CurrentRevenue([FromQuery] string? currency)
+        {
+            try
+            {
+                var res = await _revenueService.GetCurrentRevenueAsync(currency);
+                return Ok(res);
+            }
+            catch (BadRequestException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+    }
+}

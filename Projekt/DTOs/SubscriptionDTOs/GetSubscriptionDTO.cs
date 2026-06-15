@@ -8,6 +8,8 @@ public class GetSubscriptionDTO
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public string SubscriptionName { get; set; }
-    public bool IsActive { get; set; }
+    public int LeftDaysOfSubscription { get; set; }
+    //If client overpaid
+    public decimal? Retuns { get; set; }
     
 }

@@ -20,8 +20,6 @@ public class SubscriptionPaymentConfiguration : IEntityTypeConfiguration<Subscri
                 SubscriptionPaymentId = 1,
                 SubscriptionId = 1,
                 PaymentDate = new DateTime(2024, 1, 1),
-                PeriodStartDate = new DateTime(2024, 1, 1),
-                PeriodEndDate = new DateTime(2024, 2, 1),
                 Amount = 300m
             },
             // EduSoft S.A. - płatność za rok (FinManager roczny 5000 PLN)
@@ -30,8 +28,6 @@ public class SubscriptionPaymentConfiguration : IEntityTypeConfiguration<Subscri
                 SubscriptionPaymentId = 2,
                 SubscriptionId = 2,
                 PaymentDate = new DateTime(2024, 1, 1),
-                PeriodStartDate = new DateTime(2024, 1, 1),
-                PeriodEndDate = new DateTime(2025, 1, 1),
                 Amount = 5000m
             }
         );

@@ -91,7 +91,7 @@ public class ClientService : IClientService
         var person = await _context.ClientPersons.FindAsync(id);
         if (person==null)
             throw new NotFoundException("Nie znaleziono osoby o tym id");
-        //Tu automatycznie dzieki isoftdelete wykona soft Delete
+        _context.ClientPersons.Remove(person);
         await _context.SaveChangesAsync();
     }
 

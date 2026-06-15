@@ -62,7 +62,7 @@ public class ContractService : IContractService
                 x.Version == contractDto.SoftwareVersion && x.SoftwareId == contractDto.SoftwareId);
         if (softwareVersion == null)
             throw new NotFoundException("Nie znaleziono wersji o takim numerze");
-        var client = await _context.ClientPersons.FindAsync(contractDto.ClientId);
+        var client = await _context.Clients.FindAsync(contractDto.ClientId);
         if (client == null)
             throw new NotFoundException("Nie znaleziono klienta o takim id");
         var basePrice = await CalculatePriceAsync(softwareVersion.SoftwareVersionId, contractDto.AdditionalSupportYears);
@@ -172,7 +172,7 @@ public class ContractService : IContractService
                 payment = new Payment
                 {
                     Amount = paymentDto.Amount,
-                    ClientId = id,
+                    ClientId = paymentDto.ClientId,
                     ContractId = contract.ContractId,
                     Date = DateTime.Now,
                 };
@@ -183,7 +183,7 @@ public class ContractService : IContractService
                 payment = new Payment
                 {
                     Amount = paymentDto.Amount,
-                    ClientId = id,
+                    ClientId = paymentDto.ClientId,
                     ContractId = contract.ContractId,
                     Date = DateTime.Now,
                 };
@@ -247,7 +247,7 @@ public class ContractService : IContractService
     
     private async Task<bool> HasActiveContract(int clientId, int sofwareId)
     {
-        var contracts = await _context.Contracts.Where(x => x.IsActive && x.ClientId == clientId && x.SoftwareVersion.Softwares.SoftwareId== sofwareId).ToListAsync();
+        var contracts = await _context.Contracts.Where(x => x.IsActive && x.ClientId == clientId && x.SoftwareVersion.SoftwareId== sofwareId).ToListAsync();
         return contracts.Count != 0;
     }
 

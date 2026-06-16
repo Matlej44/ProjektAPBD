@@ -97,7 +97,7 @@ public class ContractService : IContractService
 
     public async Task<GetContractsDTO> GetContractByIdAsync(int id)
     {
-        var contract = await _context.Contracts.FindAsync(id);
+        var contract = await _context.Contracts.Include(x => x.Client).Include(x => x.SoftwareVersion).FirstOrDefaultAsync(x => x.ContractId == id);
         if (contract == null)
             throw new NotFoundException("Nie znaleziono kontraktu o takim id");
         return new GetContractsDTO

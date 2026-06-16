@@ -30,10 +30,32 @@ namespace Projekt.Controllers
             {
                 return NotFound(e.Message);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
-                throw;
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("predict")]
+        public async Task<IActionResult> PredictRevenue([FromQuery] string? currency, [FromQuery] string? softwareName)
+        {
+            try
+            {
+                var dto = await _revenueService.GetPredictedRevenueAsync(currency, softwareName);
+                return Ok(dto);
+            }
+            catch (BadRequestException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
             }
         }
     }

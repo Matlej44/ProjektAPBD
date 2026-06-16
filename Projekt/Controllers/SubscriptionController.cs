@@ -61,9 +61,9 @@ namespace Projekt.Controllers
             {
                 return BadRequest(e.Message);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return StatusCode(500);
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -75,6 +75,10 @@ namespace Projekt.Controllers
             {
                 var offers = await _subscrptionService.GetSubscriptionOffer(softwareId);
                 return Ok(offers);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
             }
             catch (Exception)
             {

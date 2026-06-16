@@ -41,7 +41,7 @@ public class SubscriptionService : ISubscrptionService
         var subscriptionOffer = await _context.SubscriptionOffers.FindAsync(offerId);
         if (subscriptionOffer == null)
             throw new NotFoundException("Nie znaleziono oferty o takim id");
-        var client = await _context.ClientPersons.FindAsync(subscription.ClientId);
+        var client = await _context.Clients.FindAsync(subscription.ClientId);
         if (client == null)
             throw new NotFoundException("Nie znaleziono klienta o takim id");
         var startDate = DateTime.Now;
@@ -52,7 +52,7 @@ public class SubscriptionService : ISubscrptionService
             paymentNeeded *= 0.95m;
         }
 
-        decimal returnal;
+        decimal? returnal = null;
         if (subscription.PaymentAmount < paymentNeeded)
             throw new BadRequestException("Wpłacono za mało pieniedzy");
         if (subscription.PaymentAmount > paymentNeeded)
@@ -92,7 +92,8 @@ public class SubscriptionService : ISubscrptionService
                 SubsriptionId = subscriptionNew.SubscriptionId,
                 LeftDaysOfSubscription = (int)Math.Round((subscriptionNew.EndDate - DateTime.Now).TotalDays > 0
                     ? (subscriptionNew.EndDate - DateTime.Now).TotalDays
-                    : 0)
+                    : 0),
+                Retuns = returnal
             };
             return dto;
         }
@@ -105,7 +106,7 @@ public class SubscriptionService : ISubscrptionService
 
     public async Task<string> CreatePayment(int subscriptionId, PaymentDTO payment)
     {
-        var subscription = await _context.Subscriptions.FindAsync(subscriptionId);
+        var subscription = await _context.Subscriptions.Include(x => x.SubscriptionOffer).FirstOrDefaultAsync(x => x.SubscriptionId == subscriptionId);
         if (subscription == null)
             throw new NotFoundException("Nie znaleziono subskrybcji o takim id");
         if (subscription.EndDate < DateTime.Now)
@@ -131,10 +132,11 @@ public class SubscriptionService : ISubscrptionService
                 SubscriptionId = subscriptionId
             };
             var entityEntry = await _context.SubscriptionPayments.AddAsync(paymentNew);
-            subscription.EndDate = DateTime.Now.AddMonths(subscription.SubscriptionOffer.RenewalPeriod);
+            subscription.EndDate = subscription.EndDate.AddMonths(subscription.SubscriptionOffer.RenewalPeriod);
+            _context.Subscriptions.Update(subscription);
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
-            return returnal > 0 ? $"Zapłacono za dużo zwrócono nadwyżke w wysokości ${returnal} zł" : "Zapłacono za kolejny okres subskrypcji";
+            return returnal > 0 ? $"Zapłacono za dużo zwrócono nadwyżke w wysokości {returnal} zł" : "Zapłacono za kolejny okres subskrypcji";
         }
         catch (Exception)
         {
@@ -146,6 +148,9 @@ public class SubscriptionService : ISubscrptionService
 
     public async Task<List<GetSubscriptionOfferDTO>> GetSubscriptionOffer(int softwareId)
     {
+        var software = await _context.Softwares.FindAsync(softwareId);
+        if (software == null)
+            throw new NotFoundException("Nie znaleziono oprogramowania o takim id");
         var offers = await _context.SubscriptionOffers
             .Where(x => x.SoftwareId == softwareId).Select(x => new GetSubscriptionOfferDTO
             {

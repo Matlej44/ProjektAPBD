@@ -66,6 +66,7 @@ namespace Projekt.Controllers
         
         //Function actvates every day an updates if active or deactivates if not active
         [HttpPut]
+        [Route("updateAll")]
         public async Task<IActionResult> UpdateAllActiveContracts()
         {
             await _contractService.UpdateAllContractsAsync();
@@ -74,7 +75,7 @@ namespace Projekt.Controllers
         //Function deletes contract if not active
         [HttpDelete]
         [Route("{id:int}")]
-        public async Task<IActionResult> DeleteAllInactiveContracts([FromHeader] int id)
+        public async Task<IActionResult> DeleteAllInactiveContracts([FromRoute] int id)
         {
             try
             {
@@ -93,7 +94,7 @@ namespace Projekt.Controllers
 
         [HttpPost]
         [Route("{id:int}/payments")]
-        public async Task<IActionResult> CreatePayment([FromHeader] int id, [FromBody] AddPaymentDTO addPaymentDtoDto)
+        public async Task<IActionResult> CreatePayment([FromRoute] int id, [FromBody] AddPaymentDTO addPaymentDtoDto)
         {
             try
             {
@@ -103,7 +104,7 @@ namespace Projekt.Controllers
             //W zadaniu jeżeli kontrakt wygasł mieliśmy przekierować do nowego kontraktu i taki zrobimy tym headerm
             catch (ContractTimerExcpetion e)
             {
-                return RedirectToAction(nameof(CreateContract));
+                return StatusCode(400, e.Message+" Użyj metody POST /api/contracts/createContract");
             }
             catch (NotFoundException e)
             {

@@ -1,4 +1,5 @@
-﻿using Projekt.Data;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Projekt.Data;
 
 namespace Projekt.Entity;
 
@@ -8,6 +9,8 @@ public class ClientPerson : Client, ISoftDelete
     public string Surname { get; set; }
     
     public string Pesel { get; set; }
+    [NotMapped] public bool IsSoftDeleted =false;
+    
     public void SoftDelete()
     {
         Name = "Deleted";
@@ -15,5 +18,6 @@ public class ClientPerson : Client, ISoftDelete
         Email = "deleted@deleted.com";
         Pesel = "00000000000";
         PhoneNumber = "000-000-000";
+        IsSoftDeleted = true;
     }
 }

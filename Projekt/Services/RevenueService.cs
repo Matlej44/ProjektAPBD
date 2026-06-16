@@ -83,6 +83,44 @@ public class RevenueService : IRevenueService
         return getRevenueDto;
     }
 
+    public async Task<GetPredictedRevenue> GetPredictedRevenueAsync(string? currency, string? softwareName)
+    {
+        var rate = await GetRate(currency ?? "PLN");
+        var currentIncome = await GetCurrentRevenueAsync(currency, softwareName);
+
+        //Wszystkie kontrakty opłacone
+        var predictedYearlyIncomeContracts = await _context.Contracts.Where(x => x.CreatedAt.Year == DateTime.Now.Year).SumAsync(x => x.TotalPrice);
+        
+        //Dla subskrypcji trzeba założyć że klient będzie płacił do końca roku
+        var subscriptionsThisYear = await 
+            _context.Subscriptions.Include(x => x.SubscriptionOffer).Where(x => x.EndDate.Year == DateTime.Now.Year).ToListAsync();
+        var EndOfYear = new DateTime(DateTime.Now.Year, 12, 31);
+        var predictedYearlyIncomeSubscriptions = subscriptionsThisYear.Select(x =>
+        {
+            var price = x.SubscriptionOffer.Price;
+            while (x.EndDate < EndOfYear)
+            {
+                price += x.SubscriptionOffer.Price;
+                x.EndDate = x.EndDate.AddMonths(x.SubscriptionOffer.RenewalPeriod);
+            }
+            return price;
+        }).Sum();
+        
+        var predictedYearlyRevenue = predictedYearlyIncomeSubscriptions+predictedYearlyIncomeContracts;
+        var result = new GetPredictedRevenue
+        {
+            CurrentYearlyRevenue = currentIncome.OverallRevenue,
+            PredictedYearlyRevenue = predictedYearlyRevenue,
+            CurrentYearlyRevenueContracts = currentIncome.OverallRevenueContracts,
+            PredictedYearlyRevenueContracts = predictedYearlyIncomeContracts,
+            CurrentYearlyRevenueSubscriptions = currentIncome.OverallRevenueSubscriptions,
+            PredictedYearlyRevenueSubscriptions = predictedYearlyIncomeSubscriptions,
+            PredictedRevenuePercentage = (predictedYearlyRevenue/currentIncome.OverallRevenue+1)*100,
+        };
+        
+        return result;
+    }
+
 
     //Our currency convesion uses Frankfurter api which is open source
     //Big thanks to them for this great service

@@ -96,7 +96,8 @@ public class AppDbContext : DbContext
             .Where(e => e.State == EntityState.Modified);
         foreach (var entry in persons)
         {
-            entry.Property(x => x.Pesel).IsModified = false;
+            if (!entry.Entity.IsSoftDeleted)
+                entry.Property(x => x.Pesel).IsModified = false;
         }
         
         var contracts = ChangeTracker.Entries<Contract>()

@@ -29,6 +29,8 @@ public class AppDbContext : DbContext
     public DbSet<SubscriptionOffer> SubscriptionOffers { get; set; }
     public DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
     public DbSet<Discount> Discounts { get; set; }
+    public DbSet<Employee> Employees { get; set; }
+    
 
     //Either apply configuration or use fluent API(modelBuilder.Entity<T>())
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,6 +47,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new SubscriptionOfferConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionPaymentConfiguration());
         modelBuilder.ApplyConfiguration(new DiscountConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 

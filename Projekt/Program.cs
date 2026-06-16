@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Projekt.Data;
 using Microsoft.EntityFrameworkCore;
+using Projekt.Entity;
 using Projekt.Services;
 
 namespace Projekt;
@@ -23,8 +25,20 @@ public class Program
         builder.Services.AddScoped<IContractService, ContractService>();
         builder.Services.AddScoped<ISubscrptionService, SubscriptionService>();
         builder.Services.AddScoped<IRevenueService, RevenueService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddMemoryCache();
         builder.Services.AddHttpClient<RevenueService>();
+
+        builder.Services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
+        
+        var jwtKey = builder.Configuration["Jwt:Key"];
+        if (jwtKey == null)
+            throw new Exception("Jwt:Key is not set");
+        var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+        if (jwtIssuer == null)
+            throw new Exception("Jwt:Issuer is not set");
+        
+        
 
         var app = builder.Build();
 

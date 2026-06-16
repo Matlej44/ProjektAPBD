@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Projekt.Data;
 using Projekt.Entity;
@@ -21,7 +22,14 @@ public class RevenueService : IRevenueService
 
     public async Task<string> GetCurrentRevenueAsync(string? currency)
     {
-        var income = 1999m;
+        //To jest nasz cały dorobek za wszyskie lata, Jako że nie usuwamy kontraktów ani ich nie dezaktywujemy
+        //Kontrakt raz zapłacony jest dożywotni ale tylko na określone wersje oprogramowania.
+        var contractIncome = await _context.Payments.Where(x => x.Contract.IsActive).SumAsync(x => x.Amount);
+        //Każde wpłacenie pieniedzy w subsciption Payments można od razu traktować jako przychód gdyż jest to gwarancja
+        //Że te pieniądze przedłużyły lub aktywowały komuś jego subskrybcje
+        var subscriptionIncome = await _context.SubscriptionPayments.SumAsync(x => x.Amount);
+        
+        var income = subscriptionIncome + contractIncome;
         income = await ConvertCurrency(income, currency ?? "PLN");
         return income.ToString();
     }

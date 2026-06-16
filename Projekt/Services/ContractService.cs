@@ -34,10 +34,6 @@ public class ContractService : IContractService
 
     public async Task<GetContractsDTO> CreateContract(AddContractDTO contractDto)
     {
-        if (contractDto.StartDate < DateTime.Now.AddDays(30))
-            throw new BadRequestException("Nie można ustawić daty przed 30 dniami od aktualnej daty");
-        if (contractDto.EndDate < contractDto.StartDate)
-            throw new BadRequestException("Data zakonczenia kontraktu nie może być przed datą rozpoczecia");
         if (contractDto.AdditionalSupportYears is < 0 or > 3)
             throw new BadRequestException("Długość przedłużenia wsparcia poza przedziałem");
 
@@ -76,10 +72,10 @@ public class ContractService : IContractService
             AdditionalSupportYears = contractDto.AdditionalSupportYears,
             ClientId = client.ClientId,
             CreatedAt = DateTime.Now,
-            EndDate = contractDto.EndDate,
+            EndDate = DateTime.Now.AddDays(30),
             IsActive = false,
             SoftwareVersionId = softwareVersion.SoftwareVersionId,
-            StartDate = contractDto.StartDate,
+            StartDate = DateTime.Now.AddDays(3),
             TotalPrice = basePrice
         };
         await _context.Contracts.AddAsync(contract);
@@ -161,6 +157,10 @@ public class ContractService : IContractService
             throw new NotFoundException("Nie znaleziono kontraktu o takim id");
         if(contract.IsActive) 
             throw new BadRequestException("Nie można opłacić aktywnego kontraktu");
+        if (contract.EndDate < DateTime.Now)
+            throw new ContractTimerExcpetion("Upłynął termin na opłacanie kontraktu.");
+        if (DateTime.Now < contract.StartDate)
+            throw new BadRequestException("Nie można jeszcze opłacać tego kontraktu");
         var moneyNeded = await CountTheMoneyDiff(contract.ContractId);
         if (moneyNeded == 0)
             throw new BadRequestException("Kontrakt już opłacony");

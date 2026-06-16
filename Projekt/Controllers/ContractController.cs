@@ -100,6 +100,11 @@ namespace Projekt.Controllers
                 var payment = await _contractService.CreatePaymentAsync(id, addPaymentDtoDto);
                 return Ok(payment);
             }
+            //W zadaniu jeżeli kontrakt wygasł mieliśmy przekierować do nowego kontraktu i taki zrobimy tym headerm
+            catch (ContractTimerExcpetion e)
+            {
+                return RedirectToAction(nameof(CreateContract));
+            }
             catch (NotFoundException e)
             {
                 return NotFound(e.Message);

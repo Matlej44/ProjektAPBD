@@ -1,6 +1,8 @@
-﻿namespace Projekt.Services;
+﻿using Projekt.DTOs.RevenueDTOs;
+
+namespace Projekt.Services;
 
 public interface IRevenueService
 {
-    public Task<string> GetCurrentRevenueAsync(string? currency);
+    public Task<GetRevenueDTO> GetCurrentRevenueAsync(string? currency, string? softwareName);
 }

@@ -72,6 +72,7 @@ public class SubscriptionService : ISubscrptionService
         try
         {
             var entityEntry = await _context.Subscriptions.AddAsync(subscriptionNew);
+            await _context.SaveChangesAsync();
             var payment = new SubscriptionPayment
             {
                 Amount = subscription.PaymentAmount,

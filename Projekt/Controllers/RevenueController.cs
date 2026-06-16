@@ -15,11 +15,11 @@ namespace Projekt.Controllers
             _revenueService = revenueService;
         }
         [HttpGet]
-        public async Task<IActionResult> CurrentRevenue([FromQuery] string? currency)
+        public async Task<IActionResult> CurrentRevenue([FromQuery] string? currency, [FromQuery] string? softwareName)
         {
             try
             {
-                var res = await _revenueService.GetCurrentRevenueAsync(currency);
+                var res = await _revenueService.GetCurrentRevenueAsync(currency, softwareName);
                 return Ok(res);
             }
             catch (BadRequestException e)

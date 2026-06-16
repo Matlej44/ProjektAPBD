@@ -1,6 +1,9 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Projekt.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Projekt.Entity;
 using Projekt.Services;
 
@@ -26,6 +29,8 @@ public class Program
         builder.Services.AddScoped<ISubscrptionService, SubscriptionService>();
         builder.Services.AddScoped<IRevenueService, RevenueService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+        
         builder.Services.AddMemoryCache();
         builder.Services.AddHttpClient<RevenueService>();
 
@@ -37,10 +42,29 @@ public class Program
         var jwtIssuer = builder.Configuration["Jwt:Issuer"];
         if (jwtIssuer == null)
             throw new Exception("Jwt:Issuer is not set");
-        
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtIssuer,
+                ValidAudience = jwtIssuer,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtKey))
+            };
+        });
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
+            .AddPolicy("User", policy => policy.RequireRole("User", "Admin"));
         
 
         var app = builder.Build();
+        
+
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -48,7 +72,8 @@ public class Program
             app.MapOpenApi();
             app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "v1"));
         }
-
+        
+        app.UseAuthentication();
         app.UseAuthorization();
 
 

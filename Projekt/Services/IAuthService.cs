@@ -1,6 +1,8 @@
-﻿namespace Projekt.Services;
+﻿using Projekt.DTOs.AuthenticationDTOs;
 
-public class IAuthService
+namespace Projekt.Services;
+
+public interface IAuthService
 {
-    
+    public Task<TokenDTO> Login(LoginDTO loginDto);
 }

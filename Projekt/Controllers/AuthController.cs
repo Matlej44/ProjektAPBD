@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Projekt.DTOs.AuthenticationDTOs;
+using Projekt.Exceptions;
 using Projekt.Services;
 
 namespace Projekt.Controllers
@@ -12,6 +13,24 @@ namespace Projekt.Controllers
         public AuthController(IAuthService authService)
         {
             _authService = authService;
+        }
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
+        {
+            try
+            {
+                var res = await _authService.Login(loginDto);
+                return Ok(res);
+            }
+            catch (UnauthorizedException e)
+            {
+                return Unauthorized(e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

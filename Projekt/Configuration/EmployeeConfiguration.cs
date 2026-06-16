@@ -10,6 +10,6 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
     {
         builder.ToTable("Employees");
         builder.HasKey(x => x.EmployeeId);
-        
+        builder.HasIndex(x => x.Login).IsUnique();
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projekt.DTOs.ClientsDTOs;
 using Projekt.Exceptions;
@@ -5,6 +6,7 @@ using Projekt.Services;
 
 namespace Projekt.Controllers
 {
+    [Authorize(Policy = "User")]
     [Route("api/[controller]")]
     [ApiController]
     public class ClientController : ControllerBase
@@ -14,7 +16,7 @@ namespace Projekt.Controllers
         {
             _clientService = clientService;
         }
-
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         [Route("person")]
         public async Task<IActionResult> CreatePerson([FromBody] AddPersonDTO addPersonDto)
@@ -33,7 +35,7 @@ namespace Projekt.Controllers
                 return StatusCode(500);
             }
         }
-
+        [Authorize(Policy = "Admin")]
         [HttpPut]
         [Route("person/{id:int}")]
         public async Task<IActionResult> ModifyPerson([FromRoute] int id, [FromBody] ModifyPersonDTO modifyPersonDto)
@@ -52,7 +54,7 @@ namespace Projekt.Controllers
                 return StatusCode(500);
             }
         }
-
+        [Authorize(Policy = "Admin")]
         [HttpDelete]
         [Route("person/{id:int}")]
         public async Task<IActionResult> DeletePerson([FromRoute] int id)
@@ -79,7 +81,7 @@ namespace Projekt.Controllers
             var people = await _clientService.GetPersonsAsync();
             return Ok(people);
         }
-        
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         [Route("company")]
         public async Task<IActionResult> CreateCompany([FromBody] AddCompanyDTO addCompanyDto)
@@ -99,6 +101,7 @@ namespace Projekt.Controllers
                 return StatusCode(500);
             }
         }
+        [Authorize(Policy = "Admin")]
         [HttpPut]
         [Route("company/{id:int}")]
         public async Task<IActionResult> ModifyCompany([FromRoute] int id, [FromBody] ModifyCompanyDTO modifyCompanyDto)

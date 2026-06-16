@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Projekt.DTOs.ContractDTOs;
@@ -7,6 +8,7 @@ using Projekt.Services;
 
 namespace Projekt.Controllers
 {
+    [Authorize(Policy = "User")]
     [Route("api/[controller]")]
     [ApiController]
     public class SubscriptionController : ControllerBase

@@ -17,14 +17,12 @@ public class AuthService : IAuthService
     private readonly AppDbContext _context;
     private readonly IPasswordHasher<Employee> _passwordHasher;
     private readonly IConfiguration _configuration;
-    private readonly IEmployeeService _employeeService;
 
-    public AuthService(AppDbContext context, IPasswordHasher<Employee> passwordHasher, IConfiguration configuration, IEmployeeService employeeService)
+    public AuthService(AppDbContext context, IPasswordHasher<Employee> passwordHasher, IConfiguration configuration)
     {
         _context = context;
         _passwordHasher = passwordHasher;
         _configuration = configuration;
-        _employeeService = employeeService;
     }
 
     public async Task<TokenDTO> Login(LoginDTO loginDto)

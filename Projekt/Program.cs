@@ -58,8 +58,8 @@ public class Program
             };
         });
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy("Admin", policy => policy.RequireRole("admin"))
-            .AddPolicy("User", policy => policy.RequireRole("user", "admin"));
+            .AddPolicy("Admin", policy => policy.RequireRole("admin", "Admin"))
+            .AddPolicy("User", policy => policy.RequireRole("user", "admin", "Admin", "User"));
         
 
         

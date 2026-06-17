@@ -34,7 +34,10 @@ public class EmployeeService : IEmployeeService
         var employeeExists = await _context.Employees.AnyAsync(x => x.Login == employeeDto.Login);
         if (employeeExists)
             throw new BadRequestException("Taki logi jest już zajety");
-        
+        if (employeeDto.Password.Length < 8)
+            throw new BadRequestException("Hasło za krótkie");
+        if (employeeDto.Role != "admin" && employeeDto.Role != "user")
+            throw new BadRequestException("System nie obsługuje takiej roli");
         var newEmployee = new Employee
         {
             Login = employeeDto.Login,

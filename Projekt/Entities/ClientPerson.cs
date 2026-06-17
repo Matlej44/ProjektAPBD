@@ -16,7 +16,7 @@ public class ClientPerson : Client, ISoftDelete
         Name = "Deleted";
         Surname = "Deleted";
         Email = "deleted@deleted.com";
-        Pesel = "00000000000";
+        Pesel = "0000000000";
         PhoneNumber = "000-000-000";
         IsSoftDeleted = true;
     }

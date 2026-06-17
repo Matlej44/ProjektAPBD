@@ -18,6 +18,8 @@ public class ClientService : IClientService
     {
         try
         {
+            if (personDto.Pesel.Length != 11)
+                throw new BadRequestException("Pesel ma nie poprawną długość");
             var clientPerson = new ClientPerson
             {
                 Email = personDto.Email,
@@ -41,6 +43,8 @@ public class ClientService : IClientService
     {
         try
         {
+            if (companyDto.KRS.Length != 10)
+                throw new BadRequestException("Krs jest za krótki");
             var comapny = new ClientCompany
             {
                 Email = companyDto.Email,

@@ -15,6 +15,7 @@ namespace Projekt.Controllers
             _authService = authService;
         }
         [HttpPost]
+        [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
             try

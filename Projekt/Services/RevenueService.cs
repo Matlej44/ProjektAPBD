@@ -109,13 +109,13 @@ public class RevenueService : IRevenueService
         var predictedYearlyRevenue = predictedYearlyIncomeSubscriptions+predictedYearlyIncomeContracts;
         var result = new GetPredictedRevenue
         {
-            CurrentYearlyRevenue = currentIncome.OverallRevenue,
-            PredictedYearlyRevenue = predictedYearlyRevenue,
-            CurrentYearlyRevenueContracts = currentIncome.OverallRevenueContracts,
-            PredictedYearlyRevenueContracts = predictedYearlyIncomeContracts,
-            CurrentYearlyRevenueSubscriptions = currentIncome.OverallRevenueSubscriptions,
-            PredictedYearlyRevenueSubscriptions = predictedYearlyIncomeSubscriptions,
-            PredictedRevenuePercentage = (predictedYearlyRevenue/currentIncome.OverallRevenue+1)*100,
+            CurrentYearlyRevenue = currentIncome.OverallRevenue*rate,
+            PredictedYearlyRevenue = predictedYearlyRevenue*rate,
+            CurrentYearlyRevenueContracts = currentIncome.OverallRevenueContracts*rate,
+            PredictedYearlyRevenueContracts = predictedYearlyIncomeContracts*rate,
+            CurrentYearlyRevenueSubscriptions = currentIncome.OverallRevenueSubscriptions*rate,
+            PredictedYearlyRevenueSubscriptions = predictedYearlyIncomeSubscriptions*rate,
+            PredictedRevenuePercentage = (predictedYearlyRevenue/currentIncome.OverallRevenue*rate+1)*100,
         };
         
         return result;
